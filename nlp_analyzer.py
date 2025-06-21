@@ -147,6 +147,8 @@ def ask_gemini_about_severity(article_title, article_content, kb_numbers, detect
     以下の記事は、Windowsの重大な不具合、またはその修正に関する情報ですか？
     「重大な不具合」とは、OSの機能停止、データ損失、セキュリティ脆弱性、パフォーマンスの著しい低下、特定の重要な機能が利用不可になるなどの、ユーザー体験に大きな悪影響を及ぼす問題を指します。
     単なる機能紹介、ヒント、古いニュース、製品の比較、リリース情報(不具合の言及がない場合)、あるいは軽微な視覚的バグやUIの変更に関する記事は「重大な不具合」ではありません。
+    また、「after」などの単語が含まれていた場合は、単なる「後の」情報であり、重大な不具合ではない可能性が高いので注意してください。(例：Windows 10 KB5063159 released after June patch trashes Surface Hub v1)
+    さらに影響が及ぶ範囲をWindows 11 に限定します。タイトル中にWindows 10 や Windows Server などの指定がある場合、重大な不具合ではないと判断してください。
 
     この記事にはKB番号: {', '.join(kb_numbers) if kb_numbers else 'なし'} が含まれ、
     関連キーワードとして: {', '.join(detected_keywords) if detected_keywords else 'なし'} が検出されています。
