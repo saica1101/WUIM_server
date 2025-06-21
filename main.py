@@ -4,7 +4,7 @@ import json
 import datetime
 import config
 import scraper
-import nlp_analyzer # ★nlp_analyzer をインポート
+import nlp_analyzer
 
 def main():
     print("[{}] Starting Windows Latest issue scraper...".format(datetime.datetime.now()))
