@@ -174,12 +174,32 @@ def ask_gemini_about_severity(article_title, article_content, kb_numbers, detect
 def process_and_save_issue_data_nlp(articles):
     """
     収集した記事データをNLPで分析し、不具合情報をJSONファイルに保存する。
+    過去の不具合情報も保持するようにマージする。
     Args:
         articles (list): 記事情報 (title, url, content) の辞書リスト。
     """
-    output_data = []
-    issues_found = 0
+    output_dir = config.OUTPUT_DIR # configからOUTPUT_DIRを取得
+    output_file_path = config.OUTPUT_FILE_PATH # configからOUTPUT_FILE_PATHを取得
 
+    # outputディレクトリが存在しない場合は作成
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # 既存のデータを読み込む
+    existing_data = {}
+    if os.path.exists(output_file_path):
+        try:
+            with open(output_file_path, 'r', encoding='utf-8') as f:
+                existing_list = json.load(f)
+                for entry in existing_list:
+                    if 'article_url' in entry:
+                        existing_data[entry['article_url']] = entry
+        except json.JSONDecodeError:
+            print(f"Warning: Existing JSON file {output_file_path} is corrupt or empty. Starting with fresh data.")
+            existing_data = {} # 無効なJSONの場合は空にする
+
+    issues_found_this_run = 0
+    
     for article in articles:
         article_title = article.get('article_title', '')
         article_url = article.get('article_url', '')
@@ -224,17 +244,13 @@ def process_and_save_issue_data_nlp(articles):
                 "sentiment_polarity": sentiment_polarity,
                 "content_preview": article_content[:200] + "..." if len(article_content) > 200 else article_content
             }
-            output_data.append(output_entry)
-            issues_found += 1
+            existing_data[article_url] = output_entry # URLをキーとしてデータを更新または追加
+            issues_found_this_run += 1
 
-    # outputディレクトリが存在しない場合は作成
-    output_dir = "output"
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    output_file_path = os.path.join(output_dir, "windows_update_issues_gemini.json") # ファイル名を変更
+    # マージされたデータをリストに戻す
+    final_output_data = list(existing_data.values())
 
     with open(output_file_path, 'w', encoding='utf-8') as f:
-        json.dump(output_data, f, ensure_ascii=False, indent=4)
+        json.dump(final_output_data, f, ensure_ascii=False, indent=4)
 
-    print(f"Found {issues_found} relevant issues using Gemini. Data saved to {output_file_path}")
+    print(f"Found {issues_found_this_run} new/updated relevant issues in this run. Total {len(final_output_data)} issues saved to {output_file_path}")
