@@ -64,7 +64,7 @@ ARTICLE_FILTER_KEYWORDS = ["windows update", "update", "kb", "patch", "microsoft
 NLP_POSITIVE_KEYWORDS = [
     "fixed", "solved", "resolved", "improved", "new feature", "release", "update available",
     "enhancement", "patch", "out now", "optimizations", "better", "security update",
-    "windows 10", "windows server" # Gemini promptでWindows 11 に限定する指示があるため、これらが記事タイトルや本文にある場合は除外対象としたい
+    "windows 10", "windows server", "fix" # Gemini promptでWindows 11 に限定する指示があるため、これらが記事タイトルや本文にある場合は除外対象としたい
 ]
 
 # ネガティブな感情を示すキーワード（不具合である可能性を示唆）
@@ -77,7 +77,7 @@ NLP_NEGATIVE_KEYWORDS = [
     "uninstall", # アンインストールが必要な場合も問題の可能性
     "cannot", "failed to", "unable to", # 汎用的な失敗を示すフレーズ
     "kb5", # KB番号のパターンの一部を追加 (KB5063060 など)
-    "fails", "failure", "after" # "after" が含まれる場合もGemini promptでネガティブになるよう指示
+    "fails", "failure", "issues"
 ]
 
 # 重大度を上げるキーワード
